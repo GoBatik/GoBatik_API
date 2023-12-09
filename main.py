@@ -36,7 +36,7 @@ def batik_store():
         print(e)
         return jsonify({"error": "Internal Server Error"}), 500
 
-@app.route("/store_image", methods=["GET", "POST"])
+@app.route("/gobatik/v1/store_image", methods=["GET", "POST"])
 def store_image():
     if request.method == "POST":
         # Ensure 'image' is in the request files
