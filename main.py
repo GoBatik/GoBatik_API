@@ -1,10 +1,15 @@
 from crypt import methods
 from flask import Flask, request, jsonify
+from werkzeug.utils import secure_filename
+import os
 import requests
 import haversine
 
 app = Flask(__name__)
+app.config["ALLOWED_EXTENSIONS"] = set(['png', 'jpg', 'jpeg'])
 
+def allowed_file(filename):
+    return"." in filename and filename.split(".", 1)[1] in app.config["ALLOWED_EXTENSIONS"]
 
 @app.route("/", methods=["GET"])
 def index():
@@ -31,6 +36,58 @@ def batik_store():
         print(e)
         return jsonify({"error": "Internal Server Error"}), 500
 
+@app.route("/store_image", methods=["GET", "POST"])
+def store_image():
+    if request.method == "POST":
+        # Ensure 'image' is in the request files
+        if "image" not in request.files:
+            return jsonify({
+                "status": {
+                    "code": 400,
+                    "message": "No image part in the request"
+                },
+                "data": None
+            }), 400
 
+        image = request.files["image"]
+
+        # Check if the file is allowed
+        if image and allowed_file(image.filename):
+            filename = secure_filename(image.filename)
+            # Specify the path to save the image
+            upload_path = os.path.join("static/uploads", filename)
+            # Creating folder if not exist
+            if not os.path.exists("static/uploads"):
+                os.makedirs("static/uploads")
+
+            # Save the image
+            image.save(upload_path)
+
+            return jsonify({
+                "status": {
+                    "code": 200,
+                    "message": "Image successfully uploaded",
+                },
+                "data": {
+                    "filename": filename
+                }
+            }), 200
+        else:
+            return jsonify({
+                "status": {
+                    "code": 400,
+                    "message": "Invalid file type or extension"
+                },
+                "data": None
+            }), 400
+    else:
+        return jsonify({
+            "status": {
+                "code": 405,
+                "message": "Method not allowed",
+            },
+            "data": None
+        }), 405
+        
 if __name__ == "__main__":
     app.run(debug=True)
