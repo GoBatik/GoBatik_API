@@ -76,7 +76,8 @@ def predict():
             image.save(os.path.join(app.config["UPLOAD_FOLDER"], filename))
             image_path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
 
-            prediction = predict_batik_type(image_path)
+            prediction = model.predict(image_path)
+            print(prediction)
             return jsonify({"status": "sukses", "data": prediction})
 
         else:
