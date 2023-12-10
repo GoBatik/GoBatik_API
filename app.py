@@ -76,7 +76,9 @@ def predict():
             image.save(os.path.join(app.config["UPLOAD_FOLDER"], filename))
             image_path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
 
-            prediction = model.predict(image_path)
+            img = Image.open(image_path).convert("RGB")
+            prediction = model.predict(img)
+
             print(prediction)
             return jsonify({"status": "sukses", "data": prediction})
 
