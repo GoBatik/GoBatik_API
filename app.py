@@ -5,6 +5,7 @@ from tensorflow.keras.models import load_model
 from werkzeug.utils import secure_filename
 import haversine
 import os
+import requests
 from dotenv import load_dotenv
 
 app = Flask(__name__)
