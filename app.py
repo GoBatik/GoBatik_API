@@ -4,6 +4,7 @@ from PIL import Image
 from tensorflow.keras.models import load_model
 from werkzeug.utils import secure_filename
 import haversine
+import os
 
 app = Flask(__name__)
 app.config["ALLOWED_EXTENSIONS"] = set(["png", "jpg", "jpeg"])
