@@ -5,11 +5,14 @@ from tensorflow.keras.models import load_model
 from werkzeug.utils import secure_filename
 import haversine
 import os
+from dotenv import load_dotenv
 
 app = Flask(__name__)
+load_dotenv()
 app.config["ALLOWED_EXTENSIONS"] = set(["png", "jpg", "jpeg"])
 app.config["UPLOAD_FOLDER"] = "static/uploads/"
 app.config["MODEL_FILE"] = "GoBatik.h5"
+api_key = os.environ.get("GOOGLE_PLACES_API_KEY")
 
 
 def allowed_file(filename):
@@ -34,7 +37,7 @@ def predict_batik_type(image):
     # index = np.argmax(predictions)
     # class_name = labels[index]
     # confidence_score = predictions[0][index]
-    return class_name[2:], confidence_score
+    return predictions
 
 
 @app.route("/", methods=["GET"])
@@ -50,7 +53,7 @@ def batik_store():
         if location is None:
             return jsonify({"error": "location are required."}), 400
 
-        url = f"https://maps.googleapis.com/maps/api/place/textsearch/json?query=batik%20store%20in%20{location}&key=AIzaSyD43mDPRg4B-RanFfR3pGBF9Jmj1RHqByM&rankby=prominence"
+        url = f"https://maps.googleapis.com/maps/api/place/textsearch/json?query=batik%20store%20in%20{location}&key={api_key}&rankby=prominence"
 
         response = requests.get(url)
 
