@@ -31,10 +31,10 @@ def predict_batik_type(image):
     img = img.resize((224, 224))
     img_array = np.asarray(img)
     img_array = np.expand_dims(img_array, axis=0)
-    normalized_image_array = (img_array.astype(np.float32) / 127.5) - 1
-    data = np.ndarray(shape=(1, 224, 224, 3), dtype=np.float32)
-    data[0] = normalized_image_array
-    predictions = model.predict(data)
+    # normalized_image_array = (img_array.astype(np.float32) / 127.5) - 1
+    # data = np.ndarray(shape=(1, 224, 224, 3), dtype=np.float32)
+    # data[0] = normalized_image_array
+    predictions = model.predict(img_array)
     # index = np.argmax(predictions)
     # class_name = labels[index]
     # confidence_score = predictions[0][index]
@@ -76,11 +76,11 @@ def predict():
             image.save(os.path.join(app.config["UPLOAD_FOLDER"], filename))
             image_path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
 
-            img = Image.open(image_path).convert("RGB")
-            prediction = model.predict(img)
+            predicted_batik = predict_batik_type(image_path)
+            print(predicted_batik)
+            os.remove(image_path)
 
-            print(prediction)
-            return jsonify({"status": "sukses", "data": prediction})
+            return jsonify({"status": "sukses", "data": predicted_batik})
 
         else:
             return (
