@@ -63,7 +63,7 @@ def batik_store():
             return jsonify(api_data["results"])
     except Exception as e:
         print(e)
-        return jsonify({"error": "Internal Server Error"}), 500
+        return jsonify({"error": "Internal Server Error", "message": e}), 500
 
 
 @app.route("/gobatik/v1/predict", methods=["GET", "POST"])
