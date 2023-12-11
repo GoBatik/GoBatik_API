@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 import numpy as np
 from PIL import Image
+import tensorflow
 from tensorflow.keras.models import load_model
 from werkzeug.utils import secure_filename
 import haversine
@@ -13,7 +14,12 @@ load_dotenv()
 app.config["ALLOWED_EXTENSIONS"] = set(["png", "jpg", "jpeg"])
 app.config["UPLOAD_FOLDER"] = "static/uploads/"
 app.config["MODEL_FILE"] = "GoBatik.h5"
+app.config["LABELS_FILE"] = "batik_labels.txt"
 api_key = os.environ.get("GOOGLE_PLACES_API_KEY")
+
+
+with open(app.config["LABELS_FILE"], "r") as file:
+    batik_labels = file.read().splitlines()
 
 
 def allowed_file(filename):
@@ -76,11 +82,28 @@ def predict():
             image.save(os.path.join(app.config["UPLOAD_FOLDER"], filename))
             image_path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
 
-            predicted_batik = predict_batik_type(image_path)
+            predicted_batik_probs = predict_batik_type(image_path)
+            print(predicted_batik_probs)
+
+            # for label in batik_labels:
+            #     score = tensorflow.nn.softmax(predicted_batik_probs[0])
+
+            prediction_indx = np.argmax(predicted_batik_probs)
+            print(prediction_indx)
+
+            predicted_batik = batik_labels[prediction_indx]
             print(predicted_batik)
             os.remove(image_path)
 
-            return jsonify({"status": "sukses", "data": predicted_batik})
+            return (
+                jsonify(
+                    {
+                        "status": {"code": 200, "message": "success"},
+                        "batik_name": predicted_batik,
+                    }
+                ),
+                200,
+            )
 
         else:
             return (
