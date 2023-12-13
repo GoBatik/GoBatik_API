@@ -98,8 +98,10 @@ def predict():
             return (
                 jsonify(
                     {
+                        "data": {
+                            "batik_name": predicted_batik,
+                        },
                         "status": {"code": 200, "message": "success"},
-                        "batik_name": predicted_batik,
                     }
                 ),
                 200,
