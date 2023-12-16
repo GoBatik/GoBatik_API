@@ -1,20 +1,15 @@
 batik-bali
 batik-betawi
-batik-celup
 batik-cendrawasih
-batik-ceplok
-batik-ciamis
-batik-garutan
-batik-gentongan
+batik-dayak
+batik-geblek renteng
+batik-celup
+batik-insang
 batik-kawung
-batik-keraton
 batik-lasem
 batik-megamendung
+batik-pala
 batik-parang
-batik-pekalongan
-batik-priangan
+batik-poleng
 batik-sekar
-batik-sidoluhur
-batik-sidomukti
-batik-sogan
 batik-tambal

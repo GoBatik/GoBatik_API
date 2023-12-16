@@ -15,11 +15,15 @@ app.config["ALLOWED_EXTENSIONS"] = set(["png", "jpg", "jpeg"])
 app.config["UPLOAD_FOLDER"] = "static/uploads/"
 app.config["MODEL_FILE"] = "GoBatik.h5"
 app.config["LABELS_FILE"] = "batik_labels.txt"
+app.config["DESC_FILE"] = "batik_desc.txt"
 api_key = os.environ.get("GOOGLE_PLACES_API_KEY")
 
 
 with open(app.config["LABELS_FILE"], "r") as file:
     batik_labels = file.read().splitlines()
+
+with open(app.config["DESC_FILE"], "r") as file:
+    batik_desc = file.read().splitlines()
 
 
 def allowed_file(filename):
@@ -92,6 +96,7 @@ def predict():
             print(prediction_indx)
 
             predicted_batik = batik_labels[prediction_indx]
+            predicted_batik_desc = batik_desc[prediction_indx]
             print(predicted_batik)
             os.remove(image_path)
 
@@ -100,6 +105,7 @@ def predict():
                     {
                         "data": {
                             "batik_name": predicted_batik,
+                            "batik_desc": predicted_batik_desc,
                         },
                         "status": {"code": 200, "message": "success"},
                     }
