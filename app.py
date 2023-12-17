@@ -3,6 +3,8 @@ import numpy as np
 from PIL import Image
 import tensorflow
 from tensorflow.keras.models import load_model
+from tensorflow.keras.preprocessing.image import img_to_array, load_img
+
 from werkzeug.utils import secure_filename
 import haversine
 import os
@@ -13,7 +15,7 @@ app = Flask(__name__)
 load_dotenv()
 app.config["ALLOWED_EXTENSIONS"] = set(["png", "jpg", "jpeg"])
 app.config["UPLOAD_FOLDER"] = "static/uploads/"
-app.config["MODEL_FILE"] = "GoBatik.h5"
+app.config["MODEL_FILE"] = "mdl85.h5"
 app.config["LABELS_FILE"] = "batik_labels.txt"
 app.config["DESC_FILE"] = "batik_desc.txt"
 api_key = os.environ.get("GOOGLE_PLACES_API_KEY")
@@ -21,7 +23,7 @@ api_key = os.environ.get("GOOGLE_PLACES_API_KEY")
 
 with open(app.config["LABELS_FILE"], "r") as file:
     batik_labels = file.read().splitlines()
-
+print(batik_labels)
 with open(app.config["DESC_FILE"], "r") as file:
     batik_desc = file.read().splitlines()
 
@@ -37,17 +39,15 @@ model = load_model(app.config["MODEL_FILE"], compile=False)
 
 
 def predict_batik_type(image):
-    img = Image.open(image).convert("RGB")
-    img = img.resize((224, 224))
-    img_array = np.asarray(img)
+    # img = Image.open(image).convert("RGB")
+    # img = img.resize((224, 224))
+    img = load_img(image, target_size=(224, 224))
+    img_array = img_to_array(img)
     img_array = np.expand_dims(img_array, axis=0)
-    # normalized_image_array = (img_array.astype(np.float32) / 127.5) - 1
-    # data = np.ndarray(shape=(1, 224, 224, 3), dtype=np.float32)
-    # data[0] = normalized_image_array
+    img_array /= 255.0
+
     predictions = model.predict(img_array)
-    # index = np.argmax(predictions)
-    # class_name = labels[index]
-    # confidence_score = predictions[0][index]
+
     return predictions
 
 
@@ -88,23 +88,18 @@ def predict():
 
             predicted_batik_probs = predict_batik_type(image_path)
             print(predicted_batik_probs)
-
-            # for label in batik_labels:
-            #     score = tensorflow.nn.softmax(predicted_batik_probs[0])
-
-            prediction_indx = np.argmax(predicted_batik_probs)
-            print(prediction_indx)
-
-            predicted_batik = batik_labels[prediction_indx]
-            predicted_batik_desc = batik_desc[prediction_indx]
-            print(predicted_batik)
+            
+            batik_index = np.argmax(predicted_batik_probs[0])
+            name = batik_labels[batik_index]    
+            predicted_batik_desc = batik_desc[batik_index]
+            print(name)
             os.remove(image_path)
 
             return (
                 jsonify(
                     {
                         "data": {
-                            "batik_name": predicted_batik,
+                            "batik_name": name,
                             "batik_desc": predicted_batik_desc,
                         },
                         "status": {"code": 200, "message": "success"},
