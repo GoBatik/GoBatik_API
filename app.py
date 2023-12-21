@@ -6,7 +6,6 @@ from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing.image import img_to_array, load_img
 
 from werkzeug.utils import secure_filename
-import haversine
 import os
 import requests
 from dotenv import load_dotenv
