@@ -53,7 +53,19 @@ def predict_batik_type(image):
 
 @app.route("/", methods=["GET"])
 def index():
-    return "hello gobatik guys"
+    return jsonify({"status": "GoBatik service running"})
+
+
+@app.route("/gobatik/v1/get_image", methods=["GET"])
+def get_image():
+    try:
+        photo_reference = request.args("photo_reference")
+        url = f"https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference={photo_reference}&key={api_key}"
+        response = requests.get(url)
+        print(type(response))
+        return jsonify(image_data=response.content.decode("latin1"))
+    except Exception as e:
+        return jsonify({"error": "Internal Server Error"}), 500
 
 
 @app.route("/gobatik/v1/batik_store", methods=["GET"])
@@ -74,7 +86,7 @@ def batik_store():
             return jsonify(api_data["results"])
     except Exception as e:
         print(e)
-        return jsonify({"error": "Internal Server Error", "message": e}), 500
+        return jsonify({"error": "Internal Server Error"}), 500
 
 
 @app.route("/gobatik/v1/predict", methods=["GET", "POST"])
@@ -88,9 +100,9 @@ def predict():
 
             predicted_batik_probs = predict_batik_type(image_path)
             print(predicted_batik_probs)
-            
+
             batik_index = np.argmax(predicted_batik_probs[0])
-            name = batik_labels[batik_index]    
+            name = batik_labels[batik_index]
             predicted_batik_desc = batik_desc[batik_index]
             print(name)
             os.remove(image_path)
