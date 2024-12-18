@@ -17,7 +17,7 @@ app.config["UPLOAD_FOLDER"] = "static/uploads/"
 app.config["MODEL_FILE"] = "mdl85.h5"
 app.config["LABELS_FILE"] = "batik_labels.txt"
 app.config["DESC_FILE"] = "batik_desc.txt"
-api_key = os.environ.get("GOOGLE_PLACES_API_KEY")
+#api_key = os.environ.get("GOOGLE_PLACES_API_KEY")
 
 
 with open(app.config["LABELS_FILE"], "r") as file:
@@ -59,7 +59,7 @@ def index():
 def get_image():
     try:
         photo_reference = request.args("photo_reference")
-        url = f"https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference={photo_reference}&key={api_key}"
+        url = f"https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference={photo_reference}&key=AIzaSyAoEGtvGCPrsJ_uQKBx4E0kGAk5KaFH7o8"
         response = requests.get(url)
         print(type(response))
         return jsonify(image_data=response.content.decode("latin1"))
@@ -75,7 +75,7 @@ def batik_store():
         if location is None:
             return jsonify({"error": "location are required."}), 400
 
-        url = f"https://maps.googleapis.com/maps/api/place/textsearch/json?query=batik%20store%20in%20{location}&key={api_key}&rankby=prominence"
+        url = f"https://maps.googleapis.com/maps/api/place/textsearch/json?query=batik%20store%20in%20{location}&key=AIzaSyAoEGtvGCPrsJ_uQKBx4E0kGAk5KaFH7o8&rankby=prominence"
 
         response = requests.get(url)
 
